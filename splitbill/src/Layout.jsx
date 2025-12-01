@@ -9,12 +9,13 @@ function Layout() {
     const[login,setlogin]=useState(false);
     const[welcome,setwelcome]=useState("");
     const[username,setusername]=useState("");
+    const[auth,isauth]=useState(true);
 
   return (
     <>
-    {(signup!=login)?null:<Header/>}
-    <Outlet context={{signup,setSignup,login,setlogin,welcome,setwelcome,username,setusername}} />
-    {(signup!=login)?null:<Footer/>}
+    {(auth)?null:<Header/>}
+    <Outlet context={{signup,setSignup,login,setlogin,welcome,setwelcome,username,setusername,auth,isauth}} />
+    {(auth)?null:<Footer/>}
     </>
   )
 }

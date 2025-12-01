@@ -4,10 +4,12 @@ import {useState, useEffect} from 'react'
 import toast from 'react-hot-toast'
 
 function Home() {
-    const {welcome,username} = useOutletContext();
+    const {welcome,username,isauth} = useOutletContext();
     const[open,setopen]=useState(false);
     const[code,setcode]=useState("");
     const[groups,setgroups]=useState([]);
+
+    isauth(false);
 
     const handleClick=async()=>{
         console.log("will navigate to a new page");
