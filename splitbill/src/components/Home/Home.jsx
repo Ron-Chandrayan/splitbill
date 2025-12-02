@@ -77,7 +77,7 @@ function Home() {
       });
 
       const data= await res.json();
-      console.log(data.groups);
+     // console.log(data.groups);
       setgroups(data.groups);
         } catch (error) {
             console.error(error);
@@ -104,10 +104,16 @@ function Home() {
 
 
 
-    useEffect(()=>{
-         isauth(false);
-         fetchgroups();
-    },[] ) 
+    useEffect(() => {
+  isauth(false);
+  fetchgroups(); // call once immediately
+
+  const interval = setInterval(() => {
+    fetchgroups();
+  }, 1000); // 1 second
+
+  return () => clearInterval(interval); // cleanup when component unmounts
+}, []);
 
   return (
     <>
