@@ -114,6 +114,27 @@ app.post('/joingroups',async(req,res)=>{
     
 })
 
+//create groups
+app.post('/creategroups',async(req,res)=>{
+    const{code,grpname,username}=req.body;
+    console.log("code received",code);
+   
+    const forid=await users.findOne({username:username});
+    console.log(forid._id);
+
+    const newgrp= new groups({
+        name:grpname,
+        members:[forid._id],
+        joincode:code
+    })
+    await newgrp.save();
+
+    await users.findByIdAndUpdate(forid._id,
+        {$push:{groups:newgrp._id}}
+    )
+    res.send({message:"group created "});
+})
+
 // Start server
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
