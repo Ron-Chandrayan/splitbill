@@ -2,6 +2,7 @@ import React from 'react'
 import { useOutletContext } from 'react-router-dom'
 import {useState, useEffect} from 'react'
 import toast from 'react-hot-toast'
+import { Plus, Users, Hash, UserPlus, X } from 'lucide-react'
 
 function Home() {
     const {welcome,username,isauth} = useOutletContext();
@@ -116,112 +117,185 @@ function Home() {
 }, []);
 
   return (
-    <>
-    <div>
-      <p>This is the home page</p> 
-      <p>welcome {welcome}</p>
-    </div>
-
-    <p className='cursor-pointer ' onClick={()=>{
-        setopen2(!open2);
-         generateCode();
-    }}  >Click here to create a new group +</p>
-
-    {open2?(<div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div className="relative bg-white p-6 w-96 h-96 flex flex-col">
-  {/* Close button */}
-  <button
-                className="absolute top-2 right-2 hover:bg-gray-200"
-                onClick={() => {setopen2(false)
-                    }}
-            >
-                X
-            </button>
-
-            {/* Heading */}
-            <h3 className="mb-4">Here is the code</h3>
-
-            <h3 className='mb-4'>{ncode}</h3>
-             <h3 className='mb-4'>Enter the Group Name</h3>
-
-            {/* Form */}
-            <form className="flex flex-col gap-2" onSubmit={handleSubmit2} >
-                <input
-                type="text"
-                placeholder="MEOW23"
-                value={grpname}
-                onChange={(e)=>{
-                    setgrpname(e.target.value);
-                }}
-                className="border p-2 rounded"
-                required
-                />
-                <button
-                type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                Click
-                </button>
-            </form>
-            </div>
-
-     </div>):null}
-
-
-
-    <p>List of groups you are in</p>
-    {groups.length>0?(groups.map((group)=>( //list of groups you are in
-        <div className='bg-gray-500 m-2 rounded-md cursor-pointer' onClick={handleClick} >
-            <p>{group.name}</p>
-            <p>{group.joincode}</p>
-            {(group.members).length>0?(group.members).map((person)=>(
-                <p>{person.name}</p>
-            )):<p>No members yet</p>}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      {/* Header Section */}
+      <div className="bg-white shadow-sm border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <h1 className="text-3xl font-bold text-slate-900">Welcome back, <span className="text-blue-600">{welcome}</span></h1>
+          <p className="text-slate-600 mt-1">Manage your groups and collaborations</p>
         </div>
-    ))):<p>You are not in any group</p>}
+      </div>
 
-     <p className='cursor-pointer' onClick={()=>{
-        setopen(true);
-     }}>Click to Join a new group +</p>
-     
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-4 mb-8">
+          <button 
+            onClick={()=>{
+              setopen2(!open2);
+              generateCode();
+            }}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+          >
+            <Plus size={20} />
+            Create New Group
+          </button>
 
+          <button 
+            onClick={()=>{
+              setopen(true);
+            }}
+            className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg border border-slate-200 transform hover:-translate-y-0.5"
+          >
+            <UserPlus size={20} />
+            Join Group
+          </button>
+        </div>
 
-     {open?(<div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div className="relative bg-white p-6 w-96 h-96 flex flex-col">
-  {/* Close button */}
-  <button
-                className="absolute top-2 right-2 hover:bg-gray-200"
-                onClick={() => setopen(false)}
+        {/* Groups Section */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h2 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <Users size={24} className="text-blue-600" />
+            Your Groups
+          </h2>
+          
+          {groups.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {groups.map((group, index) => (
+                <div 
+                  key={index}
+                  className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-5 border border-slate-200 hover:border-blue-300 transition-all duration-200 hover:shadow-md"
+                >
+                  <h3 className="text-lg font-semibold text-slate-900 mb-3">{group.name}</h3>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <Hash size={16} className="text-slate-400" />
+                      <span className="font-mono bg-white px-2 py-1 rounded border border-slate-200">{group.joincode}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <Users size={16} className="text-slate-400" />
+                      <span>{group.members.length} member{group.members.length !== 1 ? 's' : ''}</span>
+                    </div>
+                    
+                    <div className="text-sm text-slate-600">
+                      <span className="font-medium">Balance:</span> <span className="text-slate-500">—</span>
+                    </div>
+                  </div>
+                  
+                  <button 
+                    onClick={handleClick}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+                  >
+                    Enter Group
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Users size={48} className="text-slate-300 mx-auto mb-4" />
+              <p className="text-slate-500 text-lg mb-2">No groups yet</p>
+              <p className="text-slate-400 text-sm">Create a new group or join an existing one to get started</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Create Group Modal */}
+      {open2 && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 backdrop-blur-sm">
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md animate-in fade-in zoom-in duration-200">
+            <button
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg p-2 transition-colors"
+              onClick={() => {setopen2(false)}}
             >
-                X
+              <X size={20} />
             </button>
 
-            {/* Heading */}
-            <h3 className="mb-4">Enter the Code</h3>
+            <div className="p-6">
+              <h3 className="text-2xl font-bold text-slate-900 mb-6">Create New Group</h3>
 
-            {/* Form */}
-            <form className="flex flex-col gap-2" onSubmit={handleSubmit} >
-                <input
-                type="text"
-                placeholder="eg-rg203"
-                value={code}
-                onChange={(e)=>{
-                    setcode(e.target.value);
-                }}
-                className="border p-2 rounded"
-                />
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <p className="text-sm text-slate-600 mb-2 font-medium">Your Group Code</p>
+                <p className="text-2xl font-mono font-bold text-blue-600 tracking-wider">{ncode}</p>
+                <p className="text-xs text-slate-500 mt-2">Share this code with others to invite them</p>
+              </div>
+
+              <form className="space-y-4" onSubmit={handleSubmit2}>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Group Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Project Team"
+                    value={grpname}
+                    onChange={(e)=>{
+                      setgrpname(e.target.value);
+                    }}
+                    className="w-full border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg px-4 py-3 outline-none transition-all"
+                    required
+                  />
+                </div>
+                
                 <button
-                type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium transition-colors duration-200 shadow-md hover:shadow-lg"
                 >
-                Click
+                  Create Group
                 </button>
-            </form>
+              </form>
             </div>
+          </div>
+        </div>
+      )}
 
-     </div>):null}
+      {/* Join Group Modal */}
+      {open && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 backdrop-blur-sm">
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md animate-in fade-in zoom-in duration-200">
+            <button
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg p-2 transition-colors"
+              onClick={() => setopen(false)}
+            >
+              <X size={20} />
+            </button>
 
-    </>
+            <div className="p-6">
+              <h3 className="text-2xl font-bold text-slate-900 mb-6">Join a Group</h3>
+
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Group Code
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., ABC123"
+                    value={code}
+                    onChange={(e)=>{
+                      setcode(e.target.value);
+                    }}
+                    className="w-full border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg px-4 py-3 outline-none transition-all font-mono uppercase"
+                  />
+                  <p className="text-xs text-slate-500 mt-2">Enter the 6-character code shared by the group admin</p>
+                </div>
+                
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium transition-colors duration-200 shadow-md hover:shadow-lg"
+                >
+                  Join Group
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 
