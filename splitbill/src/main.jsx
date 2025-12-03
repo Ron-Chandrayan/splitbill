@@ -7,6 +7,7 @@ import Home from './components/Home/Home.jsx'
 import About from './components/About/About.jsx'
 import HomeWrapper from './components/HomeWrapper/HomeWrapper.jsx'
 import Authentication from './components/Authentication/Authentication.jsx'
+import Group from './components/Group/Group.jsx'
 import App from './App.jsx'
 import { Toaster } from 'react-hot-toast'
 
@@ -21,6 +22,9 @@ const router = createBrowserRouter([{
    
     path:"/home",
     element: <HomeWrapper/>
+  },{
+    path:"/group",
+    element: <Group/>
   }]
 }])
 

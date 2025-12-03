@@ -10,11 +10,12 @@ function Layout() {
     const[welcome,setwelcome]=useState("");
     const[username,setusername]=useState("");
     const[auth,isauth]=useState(true);
+    const[joincode,setjoincode]=useState("");
 
   return (
     <>
     {(auth)?null:<Header/>}
-    <Outlet context={{signup,setSignup,login,setlogin,welcome,setwelcome,username,setusername,auth,isauth}} />
+    <Outlet context={{signup,setSignup,login,setlogin,welcome,setwelcome,username,setusername,auth,isauth,joincode,setjoincode}} />
     {(auth)?null:<Footer/>}
     </>
   )

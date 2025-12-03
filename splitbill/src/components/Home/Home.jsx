@@ -1,11 +1,11 @@
 import React from 'react'
-import { useOutletContext } from 'react-router-dom'
+import { useOutletContext,useNavigate } from 'react-router-dom'
 import {useState, useEffect} from 'react'
 import toast from 'react-hot-toast'
 import { Plus, Users, Hash, UserPlus, X } from 'lucide-react'
 
 function Home() {
-    const {welcome,username,isauth} = useOutletContext();
+    const {welcome,username,isauth,setjoincode} = useOutletContext();
     const[open,setopen]=useState(false);
     const[open2,setopen2]=useState(false);
     const[code,setcode]=useState("");
@@ -13,9 +13,13 @@ function Home() {
     const[groups,setgroups]=useState([]);
     const[grpname,setgrpname]=useState("");
 
+    const navigate = useNavigate();
+
    
-    const handleClick=async()=>{
-        console.log("will navigate to a new page");
+    const handleClick=async(joincode)=>{
+        console.log(joincode);
+        setjoincode(joincode);
+        navigate('/group');
     }
 
     const handleSubmit=async(e)=>{
@@ -186,7 +190,7 @@ function Home() {
                   </div>
                   
                   <button 
-                    onClick={handleClick}
+                    onClick={()=>handleClick(group.joincode)}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
                   >
                     Enter Group

@@ -135,6 +135,14 @@ app.post('/creategroups',async(req,res)=>{
     res.send({message:"group created "});
 })
 
+app.post(('/fetchdeets'),async(req,res)=>{
+    const{joincode}=req.body;
+    console.log(joincode);
+    const grpdeets = await groups.findOne({joincode:joincode}).populate("members");
+    console.log(grpdeets.members);
+    res.send({message1:grpdeets.name ,message2:grpdeets.members});
+})
+
 // Start server
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
