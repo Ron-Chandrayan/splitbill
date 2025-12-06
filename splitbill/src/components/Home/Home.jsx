@@ -82,7 +82,7 @@ function Home() {
       });
 
       const data= await res.json();
-     // console.log(data.groups);
+     console.log(data.groups);
       setgroups(data.groups);
         } catch (error) {
             console.error(error);
@@ -171,17 +171,17 @@ function Home() {
                   key={index}
                   className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-5 border border-slate-200 hover:border-blue-300 transition-all duration-200 hover:shadow-md"
                 >
-                  <h3 className="text-lg font-semibold text-slate-900 mb-3">{group.name}</h3>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-3">{group.groupid.name}</h3>
                   
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm text-slate-600">
                       <Hash size={16} className="text-slate-400" />
-                      <span className="font-mono bg-white px-2 py-1 rounded border border-slate-200">{group.joincode}</span>
+                      <span className="font-mono bg-white px-2 py-1 rounded border border-slate-200">{group.groupid.joincode}</span>
                     </div>
                     
                     <div className="flex items-center gap-2 text-sm text-slate-600">
                       <Users size={16} className="text-slate-400" />
-                      <span>{group.members.length} member{group.members.length !== 1 ? 's' : ''}</span>
+                      <span>{group.groupid.members.length} member{group.groupid.members.length !== 1 ? 's' : ''}</span>
                     </div>
                     
                     <div className="text-sm text-slate-600">
@@ -190,7 +190,7 @@ function Home() {
                   </div>
                   
                   <button 
-                    onClick={()=>handleClick(group.joincode)}
+                    onClick={()=>handleClick(group.groupid.joincode)}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
                   >
                     Enter Group

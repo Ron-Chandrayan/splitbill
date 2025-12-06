@@ -66,13 +66,13 @@ app.post('/groups',async(req,res)=>{
     //console.log(welcome);
       const metadata = await users.findOne({ username:username })
   .populate({
-    path: "groups", // path = field in user schema
+    path: "groups.groupid", // path = field in user schema
     populate: {
       path: "members", // field inside Group schema
       select: "name"
     }
   });
-    //console.log(metadata.groups);
+    console.log(metadata.groups);
     res.send({success:true,groups:metadata.groups});
 })
 
@@ -136,11 +136,16 @@ app.post('/creategroups',async(req,res)=>{
 })
 
 app.post(('/fetchdeets'),async(req,res)=>{
-    const{joincode}=req.body;
-    console.log(joincode);
+    const{joincode,username}=req.body;
+   // console.log(joincode,username);
     const grpdeets = await groups.findOne({joincode:joincode}).populate("members");
-    console.log(grpdeets.members);
-    res.send({message1:grpdeets.name ,message2:grpdeets.members});
+   // console.log(grpdeets.members);
+    const user= await users.findOne({username:username});
+    const owes=user.groups.find((g)=>{
+       return g.groupid.equals(grpdeets._id);
+    })
+    console.log(owes);
+    res.send({message1:grpdeets.name ,message2:grpdeets.members, message3:owes});
 })
 
 // Start server
