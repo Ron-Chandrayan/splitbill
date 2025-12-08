@@ -13,9 +13,11 @@ function Group() {
     const[payload,setpayload]=useState({
       description:"",
       amount:"",
+      even:false,
       paidby:"",
       splitbtn:[]
     })
+
 
     const fetchgrpdeets=async()=>{
         const res = await fetch('http://localhost:5000/fetchdeets', {
@@ -33,31 +35,57 @@ function Group() {
 
     }
 
-    const handleChange = (e) => {
-  const { name, value, checked } = e.target;
+        const handleChange = (e) => {
+          const { name, value, checked } = e.target;
 
-  if (name === "splitbtn") {
-    if (checked) {
-      // ADD the selected value
-      setpayload({
-        ...payload,
-        splitbtn: [...payload.splitbtn, value]
-      });
-    } else {
-      // REMOVE the unchecked value
-      setpayload({
-        ...payload,
-        splitbtn: payload.splitbtn.filter((item) => item !== value)
-      });
-    }
-  } else {
-    // for other fields
-    setpayload({
-      ...payload,
-      [name]: value
-    });
-  }
-};
+          // 1️⃣ ADD/REMOVE users when checkbox is clicked
+          if (name === "splitbtn") {
+            
+            if (checked) {
+              // Add new member with default amount 0
+              setpayload({
+                ...payload,
+                splitbtn: [...payload.splitbtn, { name: value, amt: 0 }]
+              });
+            } else {
+              // Remove member
+              setpayload({
+                ...payload,
+                splitbtn: payload.splitbtn.filter((m) => m.name !== value)
+              });
+            }
+
+            return;
+          }
+
+          // 2️⃣ UPDATE INDIVIDUAL MEMBER AMOUNT
+          if (name.startsWith("amt-")) {
+            const memberName = name.replace("amt-", "");
+
+            setpayload({
+              ...payload,
+              splitbtn: payload.splitbtn.map((m) =>
+                m.name === memberName ? { ...m, amt: Number(value) } : m
+              )
+            });
+
+            return;
+          }
+
+          // 3️⃣ DEFAULT UPDATE (description, amount, paidby, even)
+          if (name === "even") {
+            setpayload({
+              ...payload,
+              even: checked
+            });
+          } else {
+            setpayload({
+              ...payload,
+              [name]: value
+            });
+          }
+        };
+
 
 
     const handleSubmit=async(e)=>{
@@ -67,6 +95,7 @@ function Group() {
       setpayload({
         description:"",
       amount:"",
+      even:false,
       paidby:"",
       splitbtn:[]
       })
@@ -99,6 +128,7 @@ function Group() {
                   name='description'
                   value={payload.description}
                   onChange={handleChange}
+                  required
                    /></div>
                   
                   <div>
@@ -107,7 +137,7 @@ function Group() {
                   name='amount'
                   value={payload.amount}
                   onChange={handleChange}
-                 
+                  required
                    />
                   </div>
 
@@ -116,20 +146,46 @@ function Group() {
                     {members.map((member)=>(
                       <div><label>
                         <input type='radio' value={member.name} name='paidby' onChange={handleChange} checked={payload.paidby === member.name}   />
-                        {member.name}
+                        {member.name} 
+                      
                         </label></div>
                       
                     ))}
                   </div>
 
+                  <div>
+                    <label>
+                      <input type='checkbox' value={payload.even} name='even' onChange={(e) => {
+                        setpayload({
+                            ...payload,
+                            even: e.target.checked
+                          });
+                        }}/>
+                    Click for Uneven Split
+                    </label>
+                    
+                  </div>
+
                    <div className='flex flex-col'  >
                     <label >Split among</label>
                     {members.map((member)=>(
-                      <div><label>
-                        <input type='checkbox'   value={member.name} name='splitbtn' onChange={handleChange}  checked={payload.splitbtn.includes(member.name)}   />
-                        {member.name}
-                        </label></div>
-                      
+                      <div> <input 
+                        type='checkbox'
+                        name='splitbtn'
+                        value={member.name}
+                        onChange={handleChange}
+                        checked={payload.splitbtn.some(m => m.name === member.name)}
+                      />
+                      <label>{member.name}</label>
+                      <input 
+                        type='text'
+                        name={`amt-${member.name}`}   // UNIQUE NAME FOR AMOUNT INPUT
+                        placeholder='enter amt'
+                        disabled={!(payload.even && payload.splitbtn.some(m => m.name === member.name))}
+                        onChange={handleChange}
+                      />
+                      </div>
+                     
                     ))}
                   </div>
                  
