@@ -19,6 +19,7 @@ mongoose.connect(MONGO_URI).then
 
 const users = require('./models/users');
 const groups = require('./models/groups');
+const expenses  = require('./models/expenses');
 
 //basic get
 app.get('/', (req,res)=>{
@@ -146,6 +147,58 @@ app.post(('/fetchdeets'),async(req,res)=>{
     })
     console.log(owes);
     res.send({message1:grpdeets.name ,message2:grpdeets.members, message3:owes});
+})
+
+app.post(('/expense'),async(req,res)=>{
+    try {
+        const data = req.body;
+      console.log(data);
+ 
+    if(data.even){
+        const tamt = Number((data.amount / data.splitbtn.length).toFixed(2));
+        const gid = await groups.findOne({joincode:data.joincode});
+       const rootuser= await users.findOne({username:data.username});
+        const newexpense = new expenses({
+            group:gid._id,
+            description: data.description,
+            amount:data.amount,
+            paidBy:new mongoose.Types.ObjectId(data.paidby),
+            splitamg: data.splitbtn.map(m => ({
+            ...m,
+            _id: new mongoose.Types.ObjectId(m._id)
+            })),
+            date: Date.now()
+        })
+        await newexpense.save();
+
+       // console.log(user);
+        console.log(typeof(data.paidby));
+
+        for (const m of data.splitbtn) {
+          const user = await users.findOne({ _id: m._id });
+           for (const g of user.groups) {
+                if (String(gid._id) === String(g.groupid)) {
+                    if (data.paidby === String(user._id)) {
+                        g.gets = g.gets + tamt;
+                    } else {
+                        g.owes = g.owes + tamt;
+                    }
+
+                    // Save the user after updating this group
+                    await user.save();
+                }
+            }
+        }
+
+    }else{
+        console.log("unequal split");
+    }
+     res.send({success: true, data:data});
+    } catch (error) {
+        console.error(error);
+        res.send({success:false, data:error.message});
+    }
+    
 })
 
 // Start server

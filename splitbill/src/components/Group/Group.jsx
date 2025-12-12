@@ -35,68 +35,105 @@ function Group() {
 
     }
 
-        const handleChange = (e) => {
-          const { name, value, checked } = e.target;
+      useEffect(() => {
+      fetchgrpdeets(); 
+    
+      const interval = setInterval(() => {
+        fetchgrpdeets();
+      }, 1000); // 1 second
+    
+      return () => clearInterval(interval); // cleanup when component unmounts
+    }, []);
 
-          // 1️⃣ ADD/REMOVE users when checkbox is clicked
-          if (name === "splitbtn") {
-            
-            if (checked) {
-              // Add new member with default amount 0
-              setpayload({
-                ...payload,
-                splitbtn: [...payload.splitbtn, { name: value, amt: 0 }]
-              });
-            } else {
-              // Remove member
-              setpayload({
-                ...payload,
-                splitbtn: payload.splitbtn.filter((m) => m.name !== value)
-              });
-            }
+                      const handleChange = (e) => {
+                  const { name, value, checked } = e.target;
 
-            return;
-          }
+                  // ---------------------------------------------------
+                  // 1️⃣ CHECKBOX → add/remove member in splitbtn
+                  // ---------------------------------------------------
+                  if (name === "splitbtn") {
+                    const member = members.find((m) => m._id === value);
 
-          // 2️⃣ UPDATE INDIVIDUAL MEMBER AMOUNT
-          if (name.startsWith("amt-")) {
-            const memberName = name.replace("amt-", "");
+                    if (checked) {
+                      // Add member
+                      setpayload(prev => ({
+                        ...prev,
+                        splitbtn: [
+                          ...prev.splitbtn,
+                          { _id: member._id, name: member.name, amt: 0 }
+                        ]
+                      }));
+                    } else {
+                      // Remove member
+                      setpayload(prev => ({
+                        ...prev,
+                        splitbtn: prev.splitbtn.filter((m) => m._id !== value)
+                      }));
+                    }
 
-            setpayload({
-              ...payload,
-              splitbtn: payload.splitbtn.map((m) =>
-                m.name === memberName ? { ...m, amt: Number(value) } : m
-              )
-            });
+                    return;
+                  }
 
-            return;
-          }
+                  // ---------------------------------------------------
+                  // 2️⃣ AMOUNT INPUT → update amt of selected member
+                  // ---------------------------------------------------
+                  if (name.startsWith("amt-")) {
+                    const id = name.replace("amt-", "");
 
-          // 3️⃣ DEFAULT UPDATE (description, amount, paidby, even)
-          if (name === "even") {
-            setpayload({
-              ...payload,
-              even: checked
-            });
-          } else {
-            setpayload({
-              ...payload,
-              [name]: value
-            });
-          }
-        };
+                    setpayload(prev => ({
+                      ...prev,
+                      splitbtn: prev.splitbtn.map((m) =>
+                        m._id === id ? { ...m, amt: Number(value) } : m
+                      )
+                    }));
+
+                    return;
+                  }
+
+                  // ---------------------------------------------------
+                  // 3️⃣ EVEN toggle checkbox
+                  // ---------------------------------------------------
+                  if (name === "even") {
+                    setpayload(prev => ({
+                      ...prev,
+                      even: checked
+                    }));
+                    return;
+                  }
+
+                  // ---------------------------------------------------
+                  // 4️⃣ DEFAULT updates
+                  // ---------------------------------------------------
+                  setpayload(prev => ({
+                    ...prev,
+                    [name]: value
+                  }));
+                };
+
 
 
 
     const handleSubmit=async(e)=>{
       e.preventDefault();
       console.log("your expense has been submitted");
-      console.log(payload);
+     // console.log(payload);
       let sum=0
       payload.splitbtn.map((s)=>{
         sum=sum+s.amt
       })
       console.log(sum);
+
+       const res = await fetch('http://localhost:5000/expense', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({...payload, joincode,username}),  //{ } is used cuz it converts only string to objects
+      });
+
+      const data = await res.json();
+      console.log(data.data);
+
+
+
       setpayload({
         description:"",
       amount:"",
@@ -248,26 +285,36 @@ function Group() {
                     </div>
 
                     {/* Split Among */}
-                    <div className='mb-6'>
-                      <label className="block text-sm font-semibold text-gray-700 mb-3">Split Among</label>
+                   <div className='mb-6'>
+  <label className="block text-sm font-semibold text-gray-700 mb-3">Split Among</label>
+
                       <div className="space-y-3 bg-gray-50 rounded-xl p-4">
-                        {members.map((member, index)=>(
-                          <div key={index} className="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-200 hover:border-indigo-300 transition-colors duration-150">
-                            <input 
-                              type='checkbox'
-                              name='splitbtn'
-                              value={member.name}
+                        {members.map((member, index) => (
+                          <div 
+                            key={index} 
+                            className="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-200 hover:border-indigo-300 transition-colors duration-150"
+                          >
+                            {/* Checkbox */}
+                            <input
+                              type="checkbox"
+                              name="splitbtn"
+                              value={member._id}
                               onChange={handleChange}
-                              checked={payload.splitbtn.some(m => m.name === member.name)}
+                              checked={payload.splitbtn.some(m => m._id === member._id)}
                               className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer"
                             />
-                            <label className="flex-1 font-medium text-gray-700">{member.name}</label>
-                            <input 
-                              type='text'
-                              name={`amt-${member.name}`}
-                              value={payload.splitbtn.find(m => m.name === member.name)?.amt || ""}
-                              placeholder='Amount'
-                              disabled={!(!payload.even && payload.splitbtn.some(m => m.name === member.name))}
+
+                            <label className="flex-1 font-medium text-gray-700">
+                              {member.name}
+                            </label>
+
+                            {/* Amount Input */}
+                            <input
+                              type="text"
+                              name={`amt-${member._id}`}
+                              value={payload.splitbtn.find(m => m._id === member._id)?.amt || ""}
+                              placeholder="Amount"
+                              disabled={!(!payload.even && payload.splitbtn.some(m => m._id === member._id))}
                               onChange={handleChange}
                               className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-all duration-200"
                             />
@@ -275,6 +322,7 @@ function Group() {
                         ))}
                       </div>
                     </div>
+
 
                     {/* Action Buttons */}
                     <div className="flex gap-3 pt-4 border-t border-gray-200">

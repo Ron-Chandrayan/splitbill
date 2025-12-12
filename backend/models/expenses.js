@@ -18,6 +18,7 @@ const ExpenseSchema = new mongoose.Schema({
 
   splitamg:[{
     user: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
+    name: String,
     amount: Number
   }],
 
