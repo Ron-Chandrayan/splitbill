@@ -155,27 +155,15 @@ app.post(('/expense'),async(req,res)=>{
     try {
         const data = req.body;
       console.log(data);
- 
-    if(data.even){
-        const tamt = Number((data.amount / data.splitbtn.length).toFixed(2));
+       
         const gid = await groups.findOne({joincode:data.joincode});
        const rootuser= await users.findOne({username:data.username});
-        const newexpense = new expenses({
-            group:gid._id,
-            description: data.description,
-            amount:data.amount,
-            paidBy:new mongoose.Types.ObjectId(data.paidby),
-            even: data.even,
-            splitamg: data.splitbtn.map(m => ({
-            ...m,
-            _id: new mongoose.Types.ObjectId(m._id)
-            })),
-            date: Date.now()
-        })
-        await newexpense.save();
 
        // console.log(user);
-        console.log(typeof(data.paidby));
+        //console.log(typeof(data.paidby));
+
+         if(data.even){
+        const tamt = Number((data.amount / data.splitbtn.length).toFixed(2));
 
         for (const m of data.splitbtn) {
           const user = await users.findOne({ _id: m._id });
@@ -195,7 +183,47 @@ app.post(('/expense'),async(req,res)=>{
 
     }else{
         console.log("unequal split");
+        let sum=0;
+        data.splitbtn.forEach((m)=>{
+            sum = sum + m.amt;
+        })
+
+        console.log("sum ", sum);
+        if(!(sum==data.amount)){
+           return res.send({success:false , data:"total sum doesn't match with the amount!!"})
+        }
+
+        for (const m of data.splitbtn){
+             
+            const user = await users.findOne({ _id: m._id });
+           for (const g of user.groups) {
+             if (String(gid._id) === String(g.groupid)) {
+                if(data.paidby === String(user._id)){
+                    g.gets = g.gets + (data.amount-m.amt)
+                }else{
+                    g.owes = g.owes + m.amt;
+                }
+                await user.save();
+             }
+           }
+        }
     }
+    const newexpense = new expenses({
+            group:gid._id,
+            description: data.description,
+            amount:data.amount,
+            paidBy:new mongoose.Types.ObjectId(data.paidby),
+            even: data.even,
+            splitamg: data.splitbtn.map(m => ({
+            ...m,
+            amount:m.amt,
+            _id: new mongoose.Types.ObjectId(m._id)
+            })),
+            date: Date.now()
+        })
+        await newexpense.save();
+
+
      res.send({success: true, data:data});
     } catch (error) {
         console.error(error);

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useOutletContext } from 'react-router-dom'
 import {useState,useEffect} from 'react'
+import toast from 'react-hot-toast'
 
 function Group() {
 
@@ -148,6 +149,12 @@ function Group() {
 
       const data = await res.json();
       console.log(data.data);
+
+      if(data.success){
+        toast.success("Expense created successfully!!");
+      }else{
+        toast.error(data.data);
+      }
 
 
 
