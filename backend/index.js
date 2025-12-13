@@ -149,6 +149,8 @@ app.post(('/fetchdeets'),async(req,res)=>{
     res.send({message1:grpdeets.name ,message2:grpdeets.members, message3:owes});
 })
 
+
+//create and manage the expenses and split
 app.post(('/expense'),async(req,res)=>{
     try {
         const data = req.body;
@@ -163,6 +165,7 @@ app.post(('/expense'),async(req,res)=>{
             description: data.description,
             amount:data.amount,
             paidBy:new mongoose.Types.ObjectId(data.paidby),
+            even: data.even,
             splitamg: data.splitbtn.map(m => ({
             ...m,
             _id: new mongoose.Types.ObjectId(m._id)
@@ -199,6 +202,31 @@ app.post(('/expense'),async(req,res)=>{
         res.send({success:false, data:error.message});
     }
     
+})
+
+//show all the expenses of a particular group
+app.post(('/fetchexpense'),async(req,res)=>{
+     const{joincode}=req.body;
+     const group = await groups.findOne({joincode:joincode});
+     const expenseslist = await expenses.find({group:group._id});
+     let finallist=[]
+    
+     for(const e of expenseslist){
+        const user=await users.findOne({_id:e.paidBy});
+          let expobj={name:"",paid:0,description:"",split:0,even:true};
+        expobj={
+            name:user.name,
+            paid:e.amount,
+            description:e.description,
+            split: e.splitamg.length,
+            even:e.even
+        }
+
+        finallist.push(expobj);
+        
+     }
+     console.log(finallist);
+    res.send({data:finallist})
 })
 
 // Start server

@@ -16,6 +16,8 @@ const ExpenseSchema = new mongoose.Schema({
     required: true
   },
 
+  even:{type:Boolean , required:true},
+
   splitamg:[{
     user: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
     name: String,
