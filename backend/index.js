@@ -327,6 +327,7 @@ app.post(('/payment'),async(req,res)=>{
     const {expid,paidid,username,amt}=req.body;
     id = new mongoose.Types.ObjectId(expid);
     const exp = await expenses.findOne({_id:id}).populate("paidBy");
+    const payer = await users.findOne({username:username});
     const group=exp.paidBy.groups;
     const grp = group.find((m)=>{
         return (exp.group.equals(m.groupid));
@@ -334,8 +335,19 @@ app.post(('/payment'),async(req,res)=>{
      if(grp){
         grp.gets = grp.gets-amt;
      }
+
+     const payergrp = payer.groups.find((m)=>{
+         return (exp.group.equals(m.groupid));
+     })
+
+     if(payergrp){
+        payergrp.owes=payergrp.owes-amt
+     }
+
     await exp.paidBy.save();
+    await payer.save();
     console.log(exp);
+    console.log(payergrp);
     res.send({data:"payment done"})
 })
 
