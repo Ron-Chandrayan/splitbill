@@ -185,7 +185,7 @@ function Home() {
                     </div>
                     
                     <div className="text-sm text-slate-600">
-                      <span className="font-medium">Balance:</span> <span className="text-slate-500">—</span>
+                      <span className="font-medium">Balance:</span> <span className="text-slate-500"> {(group.gets) - (group.owes)}</span>
                     </div>
                   </div>
                   

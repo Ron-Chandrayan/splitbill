@@ -32,7 +32,7 @@ app.post('/authentication',async(req,res)=>{
     try {
 
          const{name,username,email,password}=req.body;
-    console.log(name,username,email,password);
+   // console.log(name,username,email,password);
     if(name && email){
         const newUser = new users({name,username,email,password});
         await newUser.save();
@@ -73,7 +73,7 @@ app.post('/groups',async(req,res)=>{
       select: "name"
     }
   });
-    console.log(metadata.groups);
+    //console.log(metadata.groups);
     res.send({success:true,groups:metadata.groups});
 })
 
@@ -82,13 +82,13 @@ app.post('/joingroups',async(req,res)=>{
     try {
 
         const{code,username}=req.body;
-    console.log(code,username);
+    //console.log(code,username);
     const codegrp = await groups.findOne({joincode:code});
     if(codegrp){
         const forid = await users.findOne({username:username});  //locates the user
-        console.log(forid._id);
+        //console.log(forid._id);
         //console.log("group exists");
-        console.log(codegrp.members);
+        //console.log(codegrp.members);
 
         if (codegrp.members.some(memberId => memberId.equals(forid._id))) { //duplicate entries
     return res.send({ success: false, message: "already" });
@@ -96,15 +96,15 @@ app.post('/joingroups',async(req,res)=>{
 
         (codegrp.members).push(forid._id); //appends the memebrs name in the group
         await codegrp.save();
-        forid.groups.push(codegrp._id); //appends the group name in the members
+        forid.groups.push({groupid:codegrp._id,owes:0,gets:0}); //appends the group name in the members
         await forid.save();
 
-        console.log(codegrp.members);
+       // console.log(codegrp.members);
 
         res.send({success:true,message:"joined"});
        
     }else{
-        console.log("group doesnt exists");
+        //console.log("group doesnt exists");
         res.send({success:false,message:"nogrp"});
     }
         
@@ -118,10 +118,10 @@ app.post('/joingroups',async(req,res)=>{
 //create groups
 app.post('/creategroups',async(req,res)=>{
     const{code,grpname,username}=req.body;
-    console.log("code received",code);
+    //console.log("code received",code);
    
     const forid=await users.findOne({username:username});
-    console.log(forid._id);
+    //console.log(forid._id);
 
     const newgrp= new groups({
         name:grpname,
@@ -130,9 +130,19 @@ app.post('/creategroups',async(req,res)=>{
     })
     await newgrp.save();
 
-    await users.findByIdAndUpdate(forid._id,
-        {$push:{groups:newgrp._id}}
-    )
+    await users.findByIdAndUpdate(
+  forid._id,
+  {
+    $push: {
+      groups: {
+        groupid: newgrp._id,
+        owes: 0,
+        gets: 0
+      }
+    }
+  }
+);
+
     res.send({message:"group created "});
 })
 
@@ -145,7 +155,7 @@ app.post(('/fetchdeets'),async(req,res)=>{
     const owes=user.groups.find((g)=>{
        return g.groupid.equals(grpdeets._id);
     })
-    console.log(owes);
+    //console.log(owes);
     res.send({message1:grpdeets.name ,message2:grpdeets.members, message3:owes});
 })
 
@@ -154,7 +164,7 @@ app.post(('/fetchdeets'),async(req,res)=>{
 app.post(('/expense'),async(req,res)=>{
     try {
         const data = req.body;
-      console.log(data);
+        console.log(data);
        
         const gid = await groups.findOne({joincode:data.joincode});
        const rootuser= await users.findOne({username:data.username});
@@ -167,6 +177,7 @@ app.post(('/expense'),async(req,res)=>{
 
         for (const m of data.splitbtn) {
           const user = await users.findOne({ _id: m._id });
+          m.amt=tamt;
            for (const g of user.groups) {
                 if (String(gid._id) === String(g.groupid)) {
                     if (data.paidby === String(user._id)) {
@@ -182,13 +193,13 @@ app.post(('/expense'),async(req,res)=>{
         }
 
     }else{
-        console.log("unequal split");
+        //console.log("unequal split");
         let sum=0;
         data.splitbtn.forEach((m)=>{
             sum = sum + m.amt;
         })
 
-        console.log("sum ", sum);
+        //console.log("sum ", sum);
         if(!(sum==data.amount)){
            return res.send({success:false , data:"total sum doesn't match with the amount!!"})
         }
@@ -208,6 +219,7 @@ app.post(('/expense'),async(req,res)=>{
            }
         }
     }
+
     const newexpense = new expenses({
             group:gid._id,
             description: data.description,
@@ -241,8 +253,9 @@ app.post(('/fetchexpense'),async(req,res)=>{
     
      for(const e of expenseslist){
         const user=await users.findOne({_id:e.paidBy});
-          let expobj={name:"",paid:0,description:"",split:0,even:true};
+          let expobj={id:"", name:"",paid:0,description:"",split:0,even:true};
         expobj={
+            id:e._id,
             name:user.name,
             paid:e.amount,
             description:e.description,
@@ -253,8 +266,47 @@ app.post(('/fetchexpense'),async(req,res)=>{
         finallist.push(expobj);
         
      }
-     console.log(finallist);
+    // console.log(finallist);
     res.send({data:finallist})
+})
+
+//fetch expense deets
+app.post(('/expdeets'),async(req,res)=>{
+    try {
+
+        let {id}=req.body;
+    let gets = ""
+    let owes=[]
+    let obj={
+                name:"",
+                amt:""
+            }
+    id=new mongoose.Types.ObjectId(id);
+    const exp = await expenses.findOne({_id:id}).populate("group");
+    exp.splitamg.forEach((e)=>{
+       if(exp.paidBy.equals(e._id))
+        {
+            gets=e.name;
+        } else{
+            obj.name=e.name;
+            obj.amt=e.amount;
+            owes.push(obj);
+            obj={
+                name:"",
+                amt:""
+            }
+        }
+    })
+    console.log(exp);
+    // console.log(gets)
+    // console.log(owes);
+   // console.log(exp);
+    res.send({exp:exp.description,grp:exp.group.name, getsdeets:gets, owesdeets:owes});
+        
+    } catch (error) {
+        console.error(error.message);
+    }
+    
 })
 
 // Start server

@@ -2,6 +2,9 @@ import React from 'react'
 import { useOutletContext } from 'react-router-dom'
 import {useState,useEffect} from 'react'
 import toast from 'react-hot-toast'
+import Expense from '../Expense/Expense'
+import Settlement from '../Settlement/Settlement'
+import History from '../History/History'
 
 function Group() {
 
@@ -19,6 +22,8 @@ function Group() {
       splitbtn:[]
     })
     const[explist,setexplist]=useState([]);
+    const[exp,setexp]=useState(true);
+    const[settle,setsettle]=useState(false);
 
 
 
@@ -223,65 +228,27 @@ function Group() {
           </div>
         </div>
 
+         <div className="bg-white flex justify-around rounded-t-2xl shadow-lg p-8 border border-gray-100 mt-3">
+          <div onClick={()=>{
+            setexp(true);
+          }} className='cursor-pointer' >Expenses</div>
 
-         
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 mt-3">
-          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
-            <span className="bg-indigo-100 text-indigo-600 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm font-bold">
-              {explist.length}
-            </span>
-            Expenses
-          </h2>
-          
-          {explist.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">
-              <p className="text-lg">No expenses added yet</p>
-              <p className="text-sm mt-2">Add your first expense to get started</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {explist.map((exp, index) => (
-                <div 
-                  key={index} 
-                  className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200 hover:shadow-md hover:border-purple-300 transition-all duration-200"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="inline-block px-2 py-1 bg-indigo-600 text-white text-xs font-semibold rounded">
-                          #{index + 1}
-                        </span>
-                        <h3 className="text-lg font-bold text-gray-800">{exp.description}</h3>
-                      </div>
-                      
-                      <div className="space-y-1.5 text-sm">
-                        <p className="text-gray-700">
-                          <span className="font-semibold text-indigo-600">{exp.name}</span> paid{' '}
-                          <span className="font-bold text-gray-900">₹{exp.paid}</span>
-                        </p>
-                        
-                        <p className="text-gray-600 flex items-center gap-1">
-                          <span className={`inline-block w-2 h-2 rounded-full ${exp.even ? 'bg-green-500' : 'bg-orange-500'}`}></span>
-                          {exp.even 
-                            ? `Split equally among ${exp.split} people` 
-                            : `Split unequally among ${exp.split} people`
-                          }
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="text-right ml-4">
-                      <div className="text-xs text-gray-500 mb-1">Per person</div>
-                      <div className="text-lg font-bold text-indigo-600">
-                        ₹{(exp.paid / exp.split).toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <div onClick={()=>{
+            setsettle(true)
+            setexp(false);
+          }} className='cursor-pointer' >Settlements</div>
+
+          <div onClick={()=>{
+            setsettle(false)
+            setexp(false);
+          }} className='cursor-pointer' >History</div>
         </div>
+
+        {exp?<Expense explist={explist} />:(settle?<Settlement/>:<History/>)}
+
+        
+         
+       
       </div>
 
       
