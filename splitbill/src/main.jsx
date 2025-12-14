@@ -9,6 +9,7 @@ import HomeWrapper from './components/HomeWrapper/HomeWrapper.jsx'
 import Authentication from './components/Authentication/Authentication.jsx'
 import Group from './components/Group/Group.jsx'
 import GroupWrapper from './GroupWrapper/GroupWrapper.jsx'
+import Payment from './components/Payment/Payment.jsx'
 import App from './App.jsx'
 import { Toaster } from 'react-hot-toast'
 
@@ -26,6 +27,9 @@ const router = createBrowserRouter([{
   },{
     path:"/group",
     element: <GroupWrapper/>
+  },{
+    path:"/payment",
+    element: <Payment/>
   }]
 }])
 

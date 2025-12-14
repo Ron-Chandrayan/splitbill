@@ -297,16 +297,46 @@ app.post(('/expdeets'),async(req,res)=>{
             }
         }
     })
-    console.log(exp);
+   // console.log(exp);
     // console.log(gets)
     // console.log(owes);
    // console.log(exp);
-    res.send({exp:exp.description,grp:exp.group.name, getsdeets:gets, owesdeets:owes});
+    res.send({exp:exp.description,expid:exp._id,grp:exp.group.name, paidid:exp.paidBy ,getsdeets:gets, owesdeets:owes});
         
     } catch (error) {
         console.error(error.message);
     }
     
+})
+
+//fetchpayment details
+app.post(('/fetchpaydeets'),async(req,res)=>{
+    const {expid,paidid,username}=req.body;
+    id = new mongoose.Types.ObjectId(expid);
+    const exp = await expenses.findOne({_id:id}).populate("paidBy");
+    const user = await users.findOne({username:username});
+    const obj = exp.splitamg.filter((m)=>{
+        return (m.name===user.name)
+    })
+   // console.log(obj[0].amount);
+    res.send({payer:user.name,payingtoname:exp.paidBy.name,amt:obj[0].amount,expname:exp.description});
+})
+
+//payment
+app.post(('/payment'),async(req,res)=>{
+    const {expid,paidid,username,amt}=req.body;
+    id = new mongoose.Types.ObjectId(expid);
+    const exp = await expenses.findOne({_id:id}).populate("paidBy");
+    const group=exp.paidBy.groups;
+    const grp = group.find((m)=>{
+        return (exp.group.equals(m.groupid));
+    }) 
+     if(grp){
+        grp.gets = grp.gets-amt;
+     }
+    await exp.paidBy.save();
+    console.log(exp);
+    res.send({data:"payment done"})
 })
 
 // Start server

@@ -8,7 +8,7 @@ import History from '../History/History'
 
 function Group() {
 
-    const{joincode,username}=useOutletContext();
+    const{joincode,username,setexpid,setpaidid}=useOutletContext();
     const[name,setname]=useState("");
     const[members,setmembers]=useState([]);
     const[owes,setowes]=useState("");
@@ -244,7 +244,7 @@ function Group() {
           }} className='cursor-pointer' >History</div>
         </div>
 
-        {exp?<Expense explist={explist} />:(settle?<Settlement/>:<History/>)}
+        {exp?<Expense explist={explist} setexpid={setexpid} setpaidid={setpaidid} />:(settle?<Settlement/>:<History/>)}
 
         
          

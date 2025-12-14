@@ -1,13 +1,16 @@
 import React from 'react'
 import { useState } from 'react';
+import {useNavigate } from 'react-router-dom'; 
+import Payment from '../Payment/Payment';
 
-function Expense({explist}) {
+function Expense({explist,setexpid,setpaidid}) {
 
   const[open2,setopen2]=useState(false)
   const[gets,setgets]=useState("");
   const[owes,setowes]=useState([]);
   const[expname,setexpname]=useState("");
   const[gname,setgname]=useState("");
+  const navigate= useNavigate()
 
     const handleSubmit=async(e,id)=>{
         e.preventDefault();
@@ -27,6 +30,14 @@ function Expense({explist}) {
       setowes(data.owesdeets);
       setexpname(data.exp);
       setgname(data.grp);
+      setexpid(data.expid);
+      setpaidid(data.paidid);
+    }
+
+    const handleSubmit2=(e)=>{
+      e.preventDefault();
+      navigate('/payment');
+
     }
 
 
@@ -144,6 +155,11 @@ function Expense({explist}) {
               </div>
             </div>
           ))}
+          {gets && (
+                <button onClick={handleSubmit2} className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg">
+                  Pay to {gets}
+                </button>
+              )}
         </div>
       </div>
     </div>
