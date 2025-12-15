@@ -28,7 +28,7 @@ function Group() {
 
 
     const fetchgrpdeets=async()=>{
-        const res = await fetch('http://localhost:5000/fetchdeets', {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/fetchdeets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({joincode:joincode, username:username}),  //{ } is used cuz it converts only string to objects
@@ -44,7 +44,7 @@ function Group() {
     }
 
     const fetchexp=async()=>{
-       const res = await fetch('http://localhost:5000/fetchexpense', {
+       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/fetchexpense`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({joincode:joincode}),  //{ } is used cuz it converts only string to objects
@@ -145,7 +145,7 @@ function Group() {
       })
       //console.log(sum);
 
-       const res = await fetch('http://localhost:5000/expense', {
+       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/expense`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({...payload, joincode,username}),  //{ } is used cuz it converts only string to objects

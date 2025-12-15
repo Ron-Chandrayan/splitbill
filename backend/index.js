@@ -15,8 +15,8 @@ app.use(cors());
 const MONGO_URI = process.env.MONGO_URI;
 
 mongoose.connect(MONGO_URI).then
-(() => console.log("✅ Connected to MongoDB"))
-.catch((err) => console.error("❌ MongoDB connection error:", err));
+(() => console.log(" Connected to MongoDB"))
+.catch((err) => console.error(" MongoDB connection error:", err));
 
 const users = require('./models/users');
 const groups = require('./models/groups');
@@ -421,6 +421,22 @@ app.post(('/fetchsettlement'),async(req,res)=>{
     //console.log(arr);
     res.send({data:arr});
 })
+
+const url = `https://splitbill-89oh.onrender.com/`; // Replace with your Render URL
+const interval = 30000; // Interval in milliseconds (30 seconds)
+
+function reloadWebsite() {
+  fetch(url)
+    .then(response => {
+      console.log(`Reloaded at ${new Date().toISOString()}: Status Code ${response.status}`);
+    })
+    .catch(error => {
+      console.error(`Error reloading at ${new Date().toISOString()}:`, error.message);
+    });
+}
+
+
+setInterval(reloadWebsite, interval);
 
 // Start server
 app.listen(PORT, () => {

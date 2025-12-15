@@ -12,7 +12,7 @@ function Payment() {
   const navigate = useNavigate();
 
   const fetchpaymentdeets = async() => {
-    const res = await fetch('http://localhost:5000/fetchpaydeets', {
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/fetchpaydeets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({expid:expid, paid:paidid, username:username}),
@@ -27,7 +27,7 @@ function Payment() {
   }
 
   const handleSubmit = async() => {
-    const res = await fetch('http://localhost:5000/payment', {
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/payment`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({expid:expid, paid:paidid, username:username , amt:payamt}),

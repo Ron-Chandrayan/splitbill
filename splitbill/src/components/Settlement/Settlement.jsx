@@ -6,7 +6,7 @@ function Settlement({joincode}) {
   const[settle,setsettle]=useState([]);
 
   const fetchsettlementdeeets=async()=>{
-     const res = await fetch('http://localhost:5000/fetchsettlement', {
+     const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/fetchsettlement`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({joincode:joincode}),

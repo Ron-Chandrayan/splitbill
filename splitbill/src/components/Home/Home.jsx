@@ -31,7 +31,7 @@ function Home() {
             username:username
         }
 
-         const res = await fetch('http://localhost:5000/joingroups', {
+         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/joingroups`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),  
@@ -63,7 +63,7 @@ function Home() {
         }
         setgrpname("");
         //console.log(payload);
-        const res = await fetch('http://localhost:5000/creategroups', {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/creategroups`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),  //{ } is used cuz it converts only string to objects
@@ -75,7 +75,7 @@ function Home() {
 
     const fetchgroups=async()=>{
         try {
-            const res = await fetch('http://localhost:5000/groups', {
+            const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/groups`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({username}),  //{ } is used cuz it converts only string to objects

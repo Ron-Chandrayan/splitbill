@@ -26,7 +26,7 @@ function Expense({explist,setexpid,setpaidid,username,paymentdone,setpaymentdone
 
        setopen2(true);
 
-        const res = await fetch('http://localhost:5000/expdeets', {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/expdeets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({id:id, username:username}),  //{ } is used cuz it converts only string to objects
