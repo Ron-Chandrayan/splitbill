@@ -19,7 +19,7 @@ function Payment() {
     });
 
     const data = await res.json();
-    console.log(data);
+    //console.log(data);
     setpayer(data.payer)
     setpayingto(data.payingtoname)
     setpayamt(data.amt);
@@ -34,7 +34,7 @@ function Payment() {
     });
 
     const data = await res.json();
-    console.log(data);
+    //console.log(data);
     setpaymentdone(true);
     setpaymentmode(false);
     navigate('/group')

@@ -17,15 +17,15 @@ function Home() {
 
    
     const handleClick=async(joincode)=>{
-        console.log(joincode);
+        //console.log(joincode);
         setjoincode(joincode);
         navigate('/group');
     }
 
     const handleSubmit=async(e)=>{
         e.preventDefault();
-        console.log("you will be joined soon");
-        console.log(code);
+        //console.log("you will be joined soon");
+        //console.log(code);
         const payload={
             code:code,
             username:username
@@ -38,7 +38,7 @@ function Home() {
       });
 
       const data = await res.json();
-     // console.log(data);
+     // //console.log(data);
       if(data.success){
         toast.success("group joined successfully");
       }else{
@@ -55,14 +55,14 @@ function Home() {
 
     const handleSubmit2=async(e)=>{
         e.preventDefault();
-        console.log("group will be created soon");
+        //console.log("group will be created soon");
         const payload={
             code:ncode,
             grpname:grpname,
             username:username
         }
         setgrpname("");
-        console.log(payload);
+        //console.log(payload);
         const res = await fetch('http://localhost:5000/creategroups', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,7 +70,7 @@ function Home() {
       });
 
       const data = await res.json();
-      console.log(data);
+      //console.log(data);
     }
 
     const fetchgroups=async()=>{
@@ -82,7 +82,7 @@ function Home() {
       });
 
       const data= await res.json();
-     console.log(data.groups);
+     //console.log(data.groups);
       setgroups(data.groups);
         } catch (error) {
             console.error(error);
@@ -96,14 +96,14 @@ function Home() {
         for (let i = 0; i < length; i++) {
             result += chars[Math.floor(Math.random() * chars.length)];
         }
-        console.log(result);
+        //console.log(result);
         setncode(result);
         };
 
         // const creategroup = async ()=>{
         //     const cud = generateCode();
             
-        //     console.log(cud);
+        //     //console.log(cud);
             
         // }
 

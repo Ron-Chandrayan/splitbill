@@ -34,7 +34,7 @@ app.post('/authentication',async(req,res)=>{
     try {
 
          const{name,username,email,password}=req.body;
-   // console.log(name,username,email,password);
+   // //console.log(name,username,email,password);
     if(name && email){
         const newUser = new users({name,username,email,password});
         await newUser.save();
@@ -43,14 +43,14 @@ app.post('/authentication',async(req,res)=>{
         const cust = await users.findOne({username:username});
         if(cust){
             if(cust.password===password){
-                //console.log("login successfull");
+                ////console.log("login successfull");
                 res.send({success: true, message:"login successful", name:cust.name, username:cust.username})
             }else{
-                //console.log("password wrong");
+                ////console.log("password wrong");
                 res.send({success: false, message:"password incorrect"});
             }
         }else{
-            //console.log("username doesnt exists");
+            ////console.log("username doesnt exists");
             res.send({success: false, message:"username doesnt exists"});
         }
 
@@ -66,7 +66,7 @@ app.post('/authentication',async(req,res)=>{
 //fetchgroup
 app.post('/groups',async(req,res)=>{
     const {username} = req.body;
-    //console.log(welcome);
+    ////console.log(welcome);
       const metadata = await users.findOne({ username:username })
   .populate({
     path: "groups.groupid", // path = field in user schema
@@ -75,7 +75,7 @@ app.post('/groups',async(req,res)=>{
       select: "name"
     }
   });
-    //console.log(metadata.groups);
+    ////console.log(metadata.groups);
     res.send({success:true,groups:metadata.groups});
 })
 
@@ -84,13 +84,13 @@ app.post('/joingroups',async(req,res)=>{
     try {
 
         const{code,username}=req.body;
-    //console.log(code,username);
+    ////console.log(code,username);
     const codegrp = await groups.findOne({joincode:code});
     if(codegrp){
         const forid = await users.findOne({username:username});  //locates the user
-        //console.log(forid._id);
-        //console.log("group exists");
-        //console.log(codegrp.members);
+        ////console.log(forid._id);
+        ////console.log("group exists");
+        ////console.log(codegrp.members);
 
         if (codegrp.members.some(memberId => memberId.equals(forid._id))) { //duplicate entries
     return res.send({ success: false, message: "already" });
@@ -101,12 +101,12 @@ app.post('/joingroups',async(req,res)=>{
         forid.groups.push({groupid:codegrp._id,owes:0,gets:0}); //appends the group name in the members
         await forid.save();
 
-       // console.log(codegrp.members);
+       // //console.log(codegrp.members);
 
         res.send({success:true,message:"joined"});
        
     }else{
-        //console.log("group doesnt exists");
+        ////console.log("group doesnt exists");
         res.send({success:false,message:"nogrp"});
     }
         
@@ -120,10 +120,10 @@ app.post('/joingroups',async(req,res)=>{
 //create groups
 app.post('/creategroups',async(req,res)=>{
     const{code,grpname,username}=req.body;
-    //console.log("code received",code);
+    ////console.log("code received",code);
    
     const forid=await users.findOne({username:username});
-    //console.log(forid._id);
+    ////console.log(forid._id);
 
     const newgrp= new groups({
         name:grpname,
@@ -150,14 +150,14 @@ app.post('/creategroups',async(req,res)=>{
 
 app.post(('/fetchdeets'),async(req,res)=>{
     const{joincode,username}=req.body;
-   // console.log(joincode,username);
+   // //console.log(joincode,username);
     const grpdeets = await groups.findOne({joincode:joincode}).populate("members");
-   // console.log(grpdeets.members);
+   // //console.log(grpdeets.members);
     const user= await users.findOne({username:username});
     const owes=user.groups.find((g)=>{
        return g.groupid.equals(grpdeets._id);
     })
-    //console.log(owes);
+    ////console.log(owes);
     res.send({message1:grpdeets.name ,message2:grpdeets.members, message3:owes});
 })
 
@@ -166,13 +166,13 @@ app.post(('/fetchdeets'),async(req,res)=>{
 app.post(('/expense'),async(req,res)=>{
     try {
         const data = req.body;
-        // console.log(data);
+        // //console.log(data);
        
         const gid = await groups.findOne({joincode:data.joincode});
        const rootuser= await users.findOne({username:data.username});
 
-       // console.log(user);
-        //console.log(typeof(data.paidby));
+       // //console.log(user);
+        ////console.log(typeof(data.paidby));
 
          if(data.even){
         const tamt = Number((data.amount / data.splitbtn.length).toFixed(2));
@@ -195,13 +195,13 @@ app.post(('/expense'),async(req,res)=>{
         }
 
     }else{
-        //console.log("unequal split");
+        ////console.log("unequal split");
         let sum=0;
         data.splitbtn.forEach((m)=>{
             sum = sum + m.amt;
         })
 
-        //console.log("sum ", sum);
+        ////console.log("sum ", sum);
         if(!(sum==data.amount)){
            return res.send({success:false , data:"total sum doesn't match with the amount!!"})
         }
@@ -268,7 +268,7 @@ app.post(('/fetchexpense'),async(req,res)=>{
         finallist.push(expobj);
         
      }
-    // console.log(finallist);
+    // //console.log(finallist);
     res.send({data:finallist})
 })
 
@@ -307,19 +307,19 @@ app.post(('/expdeets'),async(req,res)=>{
         sameacc=true;
     }
     if(settlement){
-        // console.log(settlement);
+        // //console.log(settlement);
         settlement.forEach((e)=>{
             if(user._id.equals(e.fromUser)){
-                // console.log("payment done");
+                // //console.log("payment done");
                 paydone=true;
             }
         })
     }
-    // console.log(sameacc);
-   // console.log(exp);
-    // console.log(gets)
-    // console.log(owes);
-   // console.log(exp);
+    // //console.log(sameacc);
+   // //console.log(exp);
+    // //console.log(gets)
+    // //console.log(owes);
+   // //console.log(exp);
     res.send({exp:exp.description,expid:exp._id,grp:exp.group.name, paidid:exp.paidBy ,getsdeets:gets, owesdeets:owes,sameacc:sameacc,paydone:paydone});
         
     } catch (error) {
@@ -337,7 +337,7 @@ app.post(('/fetchpaydeets'),async(req,res)=>{
     const obj = exp.splitamg.filter((m)=>{
         return (m.name===user.name)
     })
-   // console.log(obj[0].amount);
+   // //console.log(obj[0].amount);
     res.send({payer:user.name,payingtoname:exp.paidBy.name,amt:obj[0].amount,expname:exp.description});
 })
 
@@ -372,8 +372,8 @@ app.post(('/payment'),async(req,res)=>{
     amount: amt,
     paidAt: Date.now()
     });
-    // console.log(exp);
-    // console.log(payergrp);
+    // //console.log(exp);
+    // //console.log(payergrp);
     res.send({data:"payment done"})
 })
 
@@ -400,9 +400,9 @@ app.post(('/fetchsettlement'),async(req,res)=>{
     expname:""
   }
 
-//   console.log(settle[0].fromUser.name)
-//   console.log("------------------------")
-//   console.log(settle[0].expenseId.paidBy.name)
+//   //console.log(settle[0].fromUser.name)
+//   //console.log("------------------------")
+//   //console.log(settle[0].expenseId.paidBy.name)
 
   for(const s of settle){
     obj.amt=s.amount;
@@ -417,11 +417,11 @@ app.post(('/fetchsettlement'),async(req,res)=>{
   }
 
 
-    console.log(arr);
+    //console.log(arr);
     res.send({data:arr});
 })
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`);
+    //console.log(`Server is running at http://localhost:${PORT}`);
 });

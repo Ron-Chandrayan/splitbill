@@ -8,7 +8,7 @@ function Header() {
 
   const handleLogout = () => {
     // Add your logout logic here
-    console.log('Logging out...')
+    //console.log('Logging out...')
   }
 
   return (

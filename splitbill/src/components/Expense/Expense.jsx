@@ -22,7 +22,7 @@ function Expense({explist,setexpid,setpaidid,username,paymentdone,setpaymentdone
 
     const handleSubmit=async(e,id)=>{
         e.preventDefault();
-       // console.log(id);
+       // //console.log(id);
 
        setopen2(true);
 
@@ -33,7 +33,7 @@ function Expense({explist,setexpid,setpaidid,username,paymentdone,setpaymentdone
       });
 
       const data = await res.json();
-      console.log(data);
+      //console.log(data);
       setgets(data.getsdeets);
       setowes(data.owesdeets);
       setexpname(data.exp);

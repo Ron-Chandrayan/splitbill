@@ -35,7 +35,7 @@ function Group() {
       });
 
       const data=await res.json();
-      console.log(data);
+      //console.log(data);
       setname(data.message1);
       setmembers(data.message2);
       setowes(data.message3.owes);
@@ -51,7 +51,7 @@ function Group() {
       });
 
       const data= await res.json();
-      console.log(data.data);
+      //console.log(data.data);
       setexplist(data.data);
     }
 
@@ -137,13 +137,13 @@ function Group() {
 
     const handleSubmit=async(e)=>{
       e.preventDefault();
-      console.log("your expense has been submitted");
-     // console.log(payload);
+      //console.log("your expense has been submitted");
+     // //console.log(payload);
       let sum=0
       payload.splitbtn.map((s)=>{
         sum=sum+s.amt
       })
-      console.log(sum);
+      //console.log(sum);
 
        const res = await fetch('http://localhost:5000/expense', {
         method: 'POST',
@@ -152,7 +152,7 @@ function Group() {
       });
 
       const data = await res.json();
-      console.log(data.data);
+      //console.log(data.data);
 
       if(data.success){
         toast.success("Expense created successfully!!");

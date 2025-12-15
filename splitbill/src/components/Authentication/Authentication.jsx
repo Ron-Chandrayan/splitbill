@@ -40,7 +40,7 @@ function Authentication() {
       });
 
       const data = await  res.json();
-      console.log(data);
+      //console.log(data);
       setFormData({
          name:'',
     email:'',
@@ -49,7 +49,7 @@ function Authentication() {
     })
 
     if(data.success){
-        console.log("welcome back");
+        //console.log("welcome back");
         toast.success("Welcome!!");
         setSignup(false);
         setlogin(false);
@@ -67,7 +67,7 @@ function Authentication() {
     } catch (error) {
         
     }
-    console.log("form submitted");
+    //console.log("form submitted");
   }
 
   return (

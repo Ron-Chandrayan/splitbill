@@ -14,7 +14,7 @@ function Settlement({joincode}) {
 
       const data = await res.json();
 
-      console.log(data.data);
+      //console.log(data.data);
       setsettle(data.data);
   }
 
