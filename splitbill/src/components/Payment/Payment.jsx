@@ -1,13 +1,15 @@
 import React from 'react'
 import { useOutletContext, useNavigate } from 'react-router-dom'; 
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 
 function Payment() {
-  const {expid, paidid, username} = useOutletContext();
+  const {expid, paidid, username,setpaymentdone,paymentmode,setpaymentmode} = useOutletContext();
   const [payamt, setpayamt] = useState(0)
   const [payer, setpayer] = useState("")
   const [payingto, setpayingto] = useState("")
   const [expname, setexpname] = useState("")
+  const navigate = useNavigate();
 
   const fetchpaymentdeets = async() => {
     const res = await fetch('http://localhost:5000/fetchpaydeets', {
@@ -33,6 +35,9 @@ function Payment() {
 
     const data = await res.json();
     console.log(data);
+    setpaymentdone(true);
+    setpaymentmode(false);
+    navigate('/group')
   }
 
   useEffect(() => {

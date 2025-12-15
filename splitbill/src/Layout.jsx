@@ -14,12 +14,14 @@ function Layout() {
     const[joincode,setjoincode]=useState("");
      const[expid,setexpid]=useState("");
       const[paidid,setpaidid]=useState("");
+    const[paymentdone,setpaymentdone]=useState(false);
+    const[paymentmode,setpaymentmode]=useState(false);
 
 
   return (
     <>
     {(auth)?null:<Header/>}
-    <Outlet context={{signup,setSignup,login,setlogin,welcome,setwelcome,username,setusername,auth,isauth,joincode,setjoincode,expid,setexpid,paidid,setpaidid}} />
+    <Outlet context={{signup,setSignup,login,setlogin,welcome,setwelcome,username,setusername,auth,isauth,joincode,setjoincode,expid,setexpid,paidid,setpaidid,paymentdone,setpaymentdone,paymentmode,setpaymentmode}} />
     {(auth)?null:<Footer/>}
     </>
   )

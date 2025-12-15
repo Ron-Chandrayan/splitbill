@@ -20,6 +20,8 @@ mongoose.connect(MONGO_URI).then
 const users = require('./models/users');
 const groups = require('./models/groups');
 const expenses  = require('./models/expenses');
+const settlements = require('./models/settlements');
+
 
 //basic get
 app.get('/', (req,res)=>{
@@ -164,7 +166,7 @@ app.post(('/fetchdeets'),async(req,res)=>{
 app.post(('/expense'),async(req,res)=>{
     try {
         const data = req.body;
-        console.log(data);
+        // console.log(data);
        
         const gid = await groups.findOne({joincode:data.joincode});
        const rootuser= await users.findOne({username:data.username});
@@ -181,7 +183,7 @@ app.post(('/expense'),async(req,res)=>{
            for (const g of user.groups) {
                 if (String(gid._id) === String(g.groupid)) {
                     if (data.paidby === String(user._id)) {
-                        g.gets = g.gets + tamt;
+                        g.gets = g.gets + (tamt*(data.splitbtn.length-1));
                     } else {
                         g.owes = g.owes + tamt;
                     }
@@ -274,7 +276,9 @@ app.post(('/fetchexpense'),async(req,res)=>{
 app.post(('/expdeets'),async(req,res)=>{
     try {
 
-        let {id}=req.body;
+        let {id,username}=req.body;
+        let sameacc=false;
+        let paydone=false;
     let gets = ""
     let owes=[]
     let obj={
@@ -283,6 +287,8 @@ app.post(('/expdeets'),async(req,res)=>{
             }
     id=new mongoose.Types.ObjectId(id);
     const exp = await expenses.findOne({_id:id}).populate("group");
+    const user = await users.findOne({username:username});
+    const settlement = await settlements.find({expenseId:id});
     exp.splitamg.forEach((e)=>{
        if(exp.paidBy.equals(e._id))
         {
@@ -297,11 +303,24 @@ app.post(('/expdeets'),async(req,res)=>{
             }
         }
     })
+    if(user._id.equals(exp.paidBy)){
+        sameacc=true;
+    }
+    if(settlement){
+        // console.log(settlement);
+        settlement.forEach((e)=>{
+            if(user._id.equals(e.fromUser)){
+                // console.log("payment done");
+                paydone=true;
+            }
+        })
+    }
+    // console.log(sameacc);
    // console.log(exp);
     // console.log(gets)
     // console.log(owes);
    // console.log(exp);
-    res.send({exp:exp.description,expid:exp._id,grp:exp.group.name, paidid:exp.paidBy ,getsdeets:gets, owesdeets:owes});
+    res.send({exp:exp.description,expid:exp._id,grp:exp.group.name, paidid:exp.paidBy ,getsdeets:gets, owesdeets:owes,sameacc:sameacc,paydone:paydone});
         
     } catch (error) {
         console.error(error.message);
@@ -346,9 +365,60 @@ app.post(('/payment'),async(req,res)=>{
 
     await exp.paidBy.save();
     await payer.save();
-    console.log(exp);
-    console.log(payergrp);
+    await settlements.create({
+    groupId:exp.group,
+    expenseId: id,
+    fromUser: payer._id,
+    amount: amt,
+    paidAt: Date.now()
+    });
+    // console.log(exp);
+    // console.log(payergrp);
     res.send({data:"payment done"})
+})
+
+//fetchsettlementdeets per grp
+app.post(('/fetchsettlement'),async(req,res)=>{
+    const {joincode}=req.body;
+    const grp = await groups.findOne({joincode:joincode});;
+    const settle = await settlements
+  .find({ groupId: grp._id })
+  .populate("fromUser")
+  .populate({
+    path: "expenseId",
+    populate: {
+      path: "paidBy",
+      select: "name"
+    }
+  }).sort({ _id: -1 });
+
+  let arr=[];
+  let obj={
+    amt:0,
+    payer:"",
+    payee:"",
+    expname:""
+  }
+
+//   console.log(settle[0].fromUser.name)
+//   console.log("------------------------")
+//   console.log(settle[0].expenseId.paidBy.name)
+
+  for(const s of settle){
+    obj.amt=s.amount;
+    obj.payer=s.fromUser.name;
+    obj.payee=s.expenseId.paidBy.name;
+    obj.expname=s.expenseId.description;
+    arr.push(obj);
+    obj={amt:0,
+    payer:"",
+    payee:"",
+    expname:""}
+  }
+
+
+    console.log(arr);
+    res.send({data:arr});
 })
 
 // Start server

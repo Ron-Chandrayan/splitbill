@@ -2,15 +2,23 @@ import React from 'react'
 import { useState } from 'react';
 import {useNavigate } from 'react-router-dom'; 
 import Payment from '../Payment/Payment';
+import toast from 'react-hot-toast'
 
-function Expense({explist,setexpid,setpaidid}) {
+function Expense({explist,setexpid,setpaidid,username,paymentdone,setpaymentdone,setpaymentmode}) {
 
   const[open2,setopen2]=useState(false)
   const[gets,setgets]=useState("");
   const[owes,setowes]=useState([]);
   const[expname,setexpname]=useState("");
   const[gname,setgname]=useState("");
+  const[itself,setitself]=useState(false);
+  const[paydone,setpaydone]=useState(false);
   const navigate= useNavigate()
+
+  if(paymentdone){
+    toast.success("Payment Done !");
+        setpaymentdone(false);
+  }
 
     const handleSubmit=async(e,id)=>{
         e.preventDefault();
@@ -21,7 +29,7 @@ function Expense({explist,setexpid,setpaidid}) {
         const res = await fetch('http://localhost:5000/expdeets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({id:id}),  //{ } is used cuz it converts only string to objects
+        body: JSON.stringify({id:id, username:username}),  //{ } is used cuz it converts only string to objects
       });
 
       const data = await res.json();
@@ -32,10 +40,13 @@ function Expense({explist,setexpid,setpaidid}) {
       setgname(data.grp);
       setexpid(data.expid);
       setpaidid(data.paidid);
+      setitself(data.sameacc);
+      setpaydone(data.paydone);
     }
 
     const handleSubmit2=(e)=>{
       e.preventDefault();
+      setpaymentmode(true);
       navigate('/payment');
 
     }
@@ -155,7 +166,7 @@ function Expense({explist,setexpid,setpaidid}) {
               </div>
             </div>
           ))}
-          {gets && (
+          {!itself && !paydone && gets  && (
                 <button onClick={handleSubmit2} className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg">
                   Pay to {gets}
                 </button>

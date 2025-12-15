@@ -7,9 +7,9 @@ import Home from './components/Home/Home.jsx'
 import About from './components/About/About.jsx'
 import HomeWrapper from './components/HomeWrapper/HomeWrapper.jsx'
 import Authentication from './components/Authentication/Authentication.jsx'
-import Group from './components/Group/Group.jsx'
-import GroupWrapper from './GroupWrapper/GroupWrapper.jsx'
+import GroupWrapper from './components/GroupWrapper/GroupWrapper.jsx'
 import Payment from './components/Payment/Payment.jsx'
+import PaymentWrapper from './components/PaymentWrapper.jsx/PaymentWrapper.jsx'
 import App from './App.jsx'
 import { Toaster } from 'react-hot-toast'
 
@@ -29,7 +29,7 @@ const router = createBrowserRouter([{
     element: <GroupWrapper/>
   },{
     path:"/payment",
-    element: <Payment/>
+    element: <PaymentWrapper/>
   }]
 }])
 

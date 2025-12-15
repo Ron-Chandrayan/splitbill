@@ -4,11 +4,10 @@ import {useState,useEffect} from 'react'
 import toast from 'react-hot-toast'
 import Expense from '../Expense/Expense'
 import Settlement from '../Settlement/Settlement'
-import History from '../History/History'
 
 function Group() {
 
-    const{joincode,username,setexpid,setpaidid}=useOutletContext();
+    const{joincode,username,setexpid,setpaidid,paymentdone,setpaymentdone,paymentmode,setpaymentmode}=useOutletContext();
     const[name,setname]=useState("");
     const[members,setmembers]=useState([]);
     const[owes,setowes]=useState("");
@@ -238,13 +237,12 @@ function Group() {
             setexp(false);
           }} className='cursor-pointer' >Settlements</div>
 
-          <div onClick={()=>{
-            setsettle(false)
-            setexp(false);
-          }} className='cursor-pointer' >History</div>
+         
+
+
         </div>
 
-        {exp?<Expense explist={explist} setexpid={setexpid} setpaidid={setpaidid} />:(settle?<Settlement/>:<History/>)}
+        {exp?<Expense explist={explist} setexpid={setexpid} setpaidid={setpaidid} username={username} paymentdone={paymentdone} setpaymentdone={setpaymentdone} setpaymentmode={setpaymentmode} />:(settle?<Settlement joincode={joincode} />:"null")}
 
         
          
