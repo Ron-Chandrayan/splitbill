@@ -1,9 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT ;
 
 // Middleware
 app.use(express.json());
@@ -11,7 +12,7 @@ app.use(cors());
 
 //connection to mongo
 
-const MONGO_URI = "mongodb://localhost:27017/splitbill";
+const MONGO_URI = process.env.MONGO_URI;
 
 mongoose.connect(MONGO_URI).then
 (() => console.log("✅ Connected to MongoDB"))
