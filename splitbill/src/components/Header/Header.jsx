@@ -3,12 +3,15 @@ import { NavLink, Link } from 'react-router-dom'
 import { Home, BarChart3, LogOut, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 
-function Header() {
+function Header({signup,setSignup,login,setlogin}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  const handleLogout = () => {
+  const handleLogout = (e) => {
     // Add your logout logic here
     //console.log('Logging out...')
+    e.preventDefault();
+    setSignup(true);
+    setlogin(false);
   }
 
   return (

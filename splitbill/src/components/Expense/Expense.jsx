@@ -13,6 +13,7 @@ function Expense({explist,setexpid,setpaidid,username,paymentdone,setpaymentdone
   const[gname,setgname]=useState("");
   const[itself,setitself]=useState(false);
   const[paydone,setpaydone]=useState(false);
+  const[meow,setmeow]=useState(false);
   const navigate= useNavigate()
 
   if(paymentdone){
@@ -33,7 +34,7 @@ function Expense({explist,setexpid,setpaidid,username,paymentdone,setpaymentdone
       });
 
       const data = await res.json();
-      //console.log(data);
+      console.log(data);
       setgets(data.getsdeets);
       setowes(data.owesdeets);
       setexpname(data.exp);
@@ -42,6 +43,7 @@ function Expense({explist,setexpid,setpaidid,username,paymentdone,setpaymentdone
       setpaidid(data.paidid);
       setitself(data.sameacc);
       setpaydone(data.paydone);
+      setmeow(data.meow);
     }
 
     const handleSubmit2=(e)=>{
@@ -135,6 +137,8 @@ function Expense({explist,setexpid,setpaidid,username,paymentdone,setpaymentdone
             className="text-white hover:bg-white/20 rounded-lg p-2 transition-colors duration-200 w-8 h-8 flex items-center justify-center"
             onClick={() => {
               setopen2(false);
+              setowes([]);
+              setexpname("");
             }}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,10 +150,10 @@ function Expense({explist,setexpid,setpaidid,username,paymentdone,setpaymentdone
 
       {/* Content */}
       <div className="p-6">
-        <h3 className="text-gray-700 font-medium text-sm mb-4 uppercase tracking-wide">Expense name: {expname}</h3>
+        <h3 className="text-gray-700 font-medium text-sm mb-4 uppercase tracking-wide">Expense name: {expname?expname:""}</h3>
         
         <div className="space-y-3 max-h-96 overflow-y-auto">
-          {owes.map((m, index) => (
+          {owes.length>0?owes.map((m, index) => (
             <div 
               key={index}
               className="flex items-start gap-3 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-200"
@@ -165,8 +169,8 @@ function Expense({explist,setexpid,setpaidid,username,paymentdone,setpaymentdone
                 </p>
               </div>
             </div>
-          ))}
-          {!itself && !paydone && gets  && (
+          )):<p className='text-black' >Loading</p>}
+          {meow && !itself && !paydone && gets  && (
                 <button onClick={handleSubmit2} className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg">
                   Pay to {gets}
                 </button>

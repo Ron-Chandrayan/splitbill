@@ -251,7 +251,7 @@ app.post(('/expense'),async(req,res)=>{
 app.post(('/fetchexpense'),async(req,res)=>{
      const{joincode}=req.body;
      const group = await groups.findOne({joincode:joincode});
-     const expenseslist = await expenses.find({group:group._id});
+     const expenseslist = await expenses.find({group:group._id}).sort({_id:-1});
      let finallist=[]
     
      for(const e of expenseslist){
@@ -280,6 +280,7 @@ app.post(('/expdeets'),async(req,res)=>{
         let {id,username}=req.body;
         let sameacc=false;
         let paydone=false;
+        let meow=false;
     let gets = ""
     let owes=[]
     let obj={
@@ -303,6 +304,12 @@ app.post(('/expdeets'),async(req,res)=>{
                 amt:""
             }
         }
+
+     if(e._id.equals(user._id)){
+        meow=true;
+     }
+     
+
     })
     if(user._id.equals(exp.paidBy)){
         sameacc=true;
@@ -321,7 +328,7 @@ app.post(('/expdeets'),async(req,res)=>{
     // //console.log(gets)
     // //console.log(owes);
    // //console.log(exp);
-    res.send({exp:exp.description,expid:exp._id,grp:exp.group.name, paidid:exp.paidBy ,getsdeets:gets, owesdeets:owes,sameacc:sameacc,paydone:paydone});
+    res.send({exp:exp.description,expid:exp._id,grp:exp.group.name, paidid:exp.paidBy ,getsdeets:gets, owesdeets:owes,sameacc:sameacc,paydone:paydone,meow:meow});
         
     } catch (error) {
         console.error(error.message);
